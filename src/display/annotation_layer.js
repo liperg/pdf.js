@@ -145,6 +145,9 @@ class AnnotationElementFactory {
 
       case AnnotationType.FILEATTACHMENT:
         return new FileAttachmentAnnotationElement(parameters);
+        
+      case AnnotationType.SIGN:
+        return new SignAnnotationElement(parameters);
 
       default:
         return new AnnotationElement(parameters);
@@ -1992,6 +1995,40 @@ class FreeTextAnnotationElement extends AnnotationElement {
 
   render() {
     this.container.className = "freeTextAnnotation";
+
+    if (this.textContent) {
+      const content = document.createElement("div");
+      content.className = "annotationTextContent";
+      content.setAttribute("role", "comment");
+      for (const line of this.textContent) {
+        const lineSpan = document.createElement("span");
+        lineSpan.textContent = line;
+        content.append(lineSpan);
+      }
+      this.container.append(content);
+    }
+
+    if (!this.data.hasPopup) {
+      this._createPopup(null, this.data);
+    }
+    return this.container;
+  }
+}
+
+class SignAnnotationElement extends AnnotationElement {
+  constructor(parameters) {
+    const isRenderable = !!(
+      parameters.data.hasPopup ||
+      parameters.data.titleObj?.str ||
+      parameters.data.contentsObj?.str ||
+      parameters.data.richText?.str
+    );
+    super(parameters, { isRenderable, ignoreBorder: true });
+    this.textContent = parameters.data.textContent;
+  }
+
+  render() {
+    this.container.className = "SignAnnotation";
 
     if (this.textContent) {
       const content = document.createElement("div");

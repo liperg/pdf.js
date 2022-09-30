@@ -93,6 +93,7 @@ function getViewerConfiguration() {
       editorFreeTextParamsToolbar: document.getElementById(
         "editorFreeTextParamsToolbar"
       ),
+      editorSignButton: document.getElementById("editorSign"),
       editorInkButton: document.getElementById("editorInk"),
       editorInkParamsToolbar: document.getElementById("editorInkParamsToolbar"),
       download: document.getElementById("download"),

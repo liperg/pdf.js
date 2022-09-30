@@ -59,6 +59,7 @@ const AnnotationEditorType = {
   NONE: 0,
   FREETEXT: 3,
   INK: 15,
+  SIGN: 99,
 };
 
 const AnnotationEditorParamsType = {
@@ -68,6 +69,10 @@ const AnnotationEditorParamsType = {
   INK_COLOR: 11,
   INK_THICKNESS: 12,
   INK_OPACITY: 13,
+
+  SIGN_SIZE: 1,
+  SIGN_COLOR: 2,
+  SIGN_OPACITY: 3,
 };
 
 // Permission flags from Table 22, Section 7.6.3.2 of the PDF specification.
@@ -128,6 +133,7 @@ const AnnotationType = {
   WATERMARK: 24,
   THREED: 25,
   REDACT: 26,
+  SIGN: 99,
 };
 
 const AnnotationStateModelType = {

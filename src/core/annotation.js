@@ -207,6 +207,9 @@ class AnnotationFactory {
       case "FileAttachment":
         return new FileAttachmentAnnotation(parameters);
 
+      case "Sign":
+        return new SignAnnotation(parameters);
+
       default:
         if (!collectFields) {
           if (!subtype) {
@@ -275,6 +278,28 @@ class AnnotationFactory {
           promises.push(
             InkAnnotation.createNewAnnotation(xref, annotation, dependencies)
           );
+          break;
+        case AnnotationEditorType.SIGN:
+          if (!baseFontRef) {
+            const baseFont = new Dict(xref);
+            baseFont.set("BaseFont", Name.get("Helvetica"));
+            baseFont.set("Type", Name.get("Font"));
+            baseFont.set("Subtype", Name.get("Type1"));
+            baseFont.set("Encoding", Name.get("WinAnsiEncoding"));
+            const buffer = [];
+            baseFontRef = xref.getNewRef();
+            writeObject(baseFontRef, baseFont, buffer, null);
+            dependencies.push({ ref: baseFontRef, data: buffer.join("") });
+          }
+          promises.push(
+            FreeTextAnnotation.createNewAnnotation(
+              xref,
+              annotation,
+              dependencies,
+              { evaluator, task, baseFontRef }
+            )
+          );
+          break;
       }
     }
 
@@ -304,6 +329,14 @@ class AnnotationFactory {
         case AnnotationEditorType.INK:
           promises.push(
             InkAnnotation.createNewPrintAnnotation(xref, annotation)
+          );
+          break;
+        case AnnotationEditorType.SIGN:
+          promises.push(
+            FreeTextAnnotation.createNewPrintAnnotation(xref, annotation, {
+              evaluator,
+              task,
+            })
           );
           break;
       }
@@ -4083,6 +4116,14 @@ class FileAttachmentAnnotation extends MarkupAnnotation {
 
     this.data.annotationType = AnnotationType.FILEATTACHMENT;
     this.data.file = file.serializable;
+  }
+}
+
+class SignAnnotation extends FreeTextAnnotation {
+  constructor(parameters) {
+    super(parameters);
+
+    this.data.annotationType = AnnotationType.SIGN;
   }
 }
 

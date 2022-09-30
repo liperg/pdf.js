@@ -43,6 +43,7 @@ const PAGE_NUMBER_LOADING_INDICATOR = "visiblePageIsLoading";
  * @property {HTMLButtonElement} viewFind - Button to open find bar.
  * @property {HTMLButtonElement} openFile - Button to open a new document.
  * @property {HTMLButtonElement} editorFreeTextButton - Button to switch to
+ * @property {HTMLButtonElement} signButton - Button to switch to
  *   FreeText editing.
  * @property {HTMLButtonElement} download - Button to download the document.
  */
@@ -75,6 +76,18 @@ class Toolbar {
             return classList.contains("toggled")
               ? AnnotationEditorType.NONE
               : AnnotationEditorType.FREETEXT;
+          },
+        },
+      },
+      {
+        element: options.editorSignButton,
+        eventName: "switchannotationeditormode",
+        eventDetails: {
+          get mode() {
+            const { classList } = options.editorSignButton;
+            return classList.contains("toggled")
+              ? AnnotationEditorType.NONE
+              : AnnotationEditorType.SIGN;
           },
         },
       },
@@ -209,6 +222,8 @@ class Toolbar {
   #bindEditorToolsListener({
     editorFreeTextButton,
     editorFreeTextParamsToolbar,
+    editorSignButton,
+    editorSignParamsToolbar,
     editorInkButton,
     editorInkParamsToolbar,
   }) {
@@ -218,6 +233,11 @@ class Toolbar {
           mode: AnnotationEditorType.FREETEXT,
           button: editorFreeTextButton,
           toolbar: editorFreeTextParamsToolbar,
+        },
+        {
+          mode: AnnotationEditorType.SIGN,
+          button: editorSignButton,
+          toolbar: editorSignParamsToolbar,
         },
         {
           mode: AnnotationEditorType.INK,

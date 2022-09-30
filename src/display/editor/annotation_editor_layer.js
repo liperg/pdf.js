@@ -26,6 +26,7 @@ import { bindEvents, KeyboardManager } from "./tools.js";
 import { AnnotationEditorType } from "../../shared/util.js";
 import { FreeTextEditor } from "./freetext.js";
 import { InkEditor } from "./ink.js";
+import { SignEditor } from "./sign.js";
 
 /**
  * @typedef {Object} AnnotationEditorLayerOptions
@@ -69,8 +70,13 @@ class AnnotationEditorLayer {
       AnnotationEditorLayer._initialized = true;
       FreeTextEditor.initialize(options.l10n);
       InkEditor.initialize(options.l10n);
+      SignEditor.initialize(options.l10n);
 
-      options.uiManager.registerEditorTypes([FreeTextEditor, InkEditor]);
+      options.uiManager.registerEditorTypes([
+        FreeTextEditor,
+        InkEditor,
+        SignEditor,
+      ]);
     }
     this.#uiManager = options.uiManager;
     this.annotationStorage = options.annotationStorage;
@@ -353,8 +359,30 @@ class AnnotationEditorLayer {
         return new FreeTextEditor(params);
       case AnnotationEditorType.INK:
         return new InkEditor(params);
+      case AnnotationEditorType.SIGN:
+        return this.getOrCreateSignEditor(params);
     }
     return null;
+  }
+
+  getOrCreateSignEditor(params) {
+    const editors = params.parent.#editors;
+    const it = editors.values();
+    let e = it.next().value;
+    let found = null;
+    while (e) {
+      if (e.name === "signEditor") {
+        found = e;
+        break;
+      }
+      e = it.next().value;
+    }
+    if (found) {
+      found.setAt(params.x, params.y, 0, 0);
+      return found;
+    }
+
+    return new SignEditor(params);
   }
 
   /**
@@ -368,6 +396,8 @@ class AnnotationEditorLayer {
         return FreeTextEditor.deserialize(data, this);
       case AnnotationEditorType.INK:
         return InkEditor.deserialize(data, this);
+      case AnnotationEditorType.SIGN:
+        return SignEditor.deserialize(data, this);
     }
     return null;
   }
